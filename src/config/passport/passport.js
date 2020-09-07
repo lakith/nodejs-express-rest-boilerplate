@@ -23,7 +23,7 @@ const options = {
     algorithms: ['RS256']
 };
 
-const strategy = new JwtStrategy(options, (jwt_payload, done) => {
+const strategy = new JwtStrategy(options, async (jwt_payload, done) => {
     try{
         const user = await UserService.findUserById(jwt_payload.sub)
         if (user) {
