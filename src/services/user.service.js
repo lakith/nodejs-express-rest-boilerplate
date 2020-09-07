@@ -1,5 +1,5 @@
 const User = require('../models/user.modal')
-const {GeneralError} = require('../utils/errors')
+const {GeneralError, BadRequest} = require('../utils/errors')
 const {validPassword, genPassword, issueJWT} = require('../utils/utils')
 
 const findUserById = async(userId) => {
@@ -22,6 +22,35 @@ const findDuplicateUsers = async (email) => {
         throw new GeneralError('Something Went Wrong..')
     }
 };
+
+const login = async ({email, password}) => {
+    try{
+        let user = await User.findOne({email});
+        if(user) {
+            let passwordIsValid = await validPassword(password, user)
+            if(passwordIsValid) {
+                const signedJWT = issueJWT(user)
+                user.tokens = user.tokens.concat({ token: signedJWT.token })
+                await user.save()
+                let data = {
+                    user,
+                    ...signedJWT
+                }
+                return data
+            }
+        } else {
+            throw new BadRequest("Email Not Found")
+        }
+    } catch (error) {
+        if(error instanceof BadRequest) {
+            throw new BadRequest(error)
+        } else {
+            console.log('error', error)
+            throw new GeneralError('Something Went Wrong..')
+        }
+    }
+}
+
 /**
  * @param {*} user - User data from the rest endpoint
  * @returns - returns registerd user data with tokens
@@ -45,12 +74,11 @@ const signUp = async (user) => {
          */
         const signedJWT = issueJWT(user)
         newUser.tokens = newUser.tokens.concat({ token: signedJWT.token })
-        await newUser.save()
+        user = await newUser.save()
 
         let data = {
-            ...user,
-            token : signedJWT.token,
-            expires: signedJWT.expires
+            user,
+            ...signedJWT
         }
         return data
     } catch (error) {
@@ -61,6 +89,7 @@ const signUp = async (user) => {
 
 module.exports = {
     signUp,
+    login,
     findDuplicateUsers,
     findUserById
 }

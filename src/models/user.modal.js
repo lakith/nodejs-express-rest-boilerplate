@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const { BadRequest, GeneralError } = require("../utils/errors");
+const { issueJWT } = require("../utils/utils");
 
 const userSchema = new mongoose.Schema(
   {
@@ -74,6 +75,18 @@ userSchema.statics.findDuplicateEmails = async function (email) {
     } else {
       return false;
     }
+  } catch (error) {
+    throw new GeneralError(error);
+  }
+};
+
+userSchema.methods.generateAuthToken = async function () {
+  try {
+    const user = this;
+    const signedJWT = issueJWT(user);
+    user.tokens = user.tokens.concat({ token: signedJWT.token });
+    await user.save();
+    return signedJWT;
   } catch (error) {
     throw new GeneralError(error);
   }

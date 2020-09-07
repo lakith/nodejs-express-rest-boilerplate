@@ -14,8 +14,8 @@ const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8');
  * @param {*} inputPassword - The plain text password
  * @param {*} userPassword - The password stored in the database
  */
-async function validPassword(inputPassword, userPassword) {
-    var hashVerify = await bcrypt.compare(password, user.password);
+async function validPassword(inputPassword, user) {
+    var hashVerify = await bcrypt.compare(inputPassword, user.password);
     return hashVerify;
 }
 
