@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
 
-const dbURL = 'mongodb+srv://lakith:linksyswith3com@umbrella-cluster.bwp5o.gcp.mongodb.net/task-manager-api?retryWrites=true&w=majority';
+const dbURL = process.env.DB_URL;
 
 // refere this link for more details - https://mongoosejs.com/docs/connections.html
 module.exports = async () => {
