@@ -67,14 +67,14 @@ const signUp = async (user) => {
          * This uses brcrpt to hash user passwords
          */
         const newUser = new User({...user})
-        await newUser.save({user})
+        user = await newUser.save({user})
 
         /**
          * Genarate a signed jwt and save it in jwt token list for new user
          */
         const signedJWT = issueJWT(user)
         newUser.tokens = newUser.tokens.concat({ token: signedJWT.token })
-        user = await newUser.save()
+        await newUser.save()
 
         let data = {
             user,
