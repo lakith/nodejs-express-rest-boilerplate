@@ -1,13 +1,14 @@
 const User = require('../models/user.modal')
 const {GeneralError, BadRequest} = require('../utils/errors')
 const {validPassword, genPassword, issueJWT} = require('../utils/utils')
+const logger = require('../config/logger/logger')
 
 const findUserById = async(userId) => {
     try {
         const user = await User.findById(userId)
         return user
     } catch (error) {
-        console.log('error', error)
+        logger.error(error)
         throw new GeneralError('Something Went Wrong..')
     }
 }
@@ -15,10 +16,9 @@ const findUserById = async(userId) => {
 const findDuplicateUsers = async (email) => {
     try {
         let userStatus = await User.findDuplicateEmails(email)
-        console.log('userStatus' ,userStatus)
         return userStatus
     } catch (error) {
-        console.log('error', error)
+        logger.error(error)
         throw new GeneralError('Something Went Wrong..')
     }
 };
@@ -42,6 +42,7 @@ const login = async ({email, password}) => {
             throw new BadRequest("Email Not Found")
         }
     } catch (error) {
+        logger.error(error)
         if(error instanceof BadRequest) {
             throw new BadRequest(error)
         } else {
@@ -82,7 +83,7 @@ const signUp = async (user) => {
         }
         return data
     } catch (error) {
-        console.log(error)
+        logger.error(error)
         throw new Error(error)
     }
 }

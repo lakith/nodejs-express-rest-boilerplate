@@ -1,6 +1,6 @@
 const logger = require("../config/logger/logger");
 const userService = require('../services/user.service')
-const {GeneralError, BadRequest} = require('../utils/errors')
+const {BadRequest} = require('../utils/errors')
 const Constants = require('../constants/constants')
 const httpStatus = require('http-status')
 
@@ -19,6 +19,7 @@ const signUp = async (req, res,next) => {
             throw new BadRequest('Email Already exsists.')
         }
     } catch (error) {
+        logger.error(error)
         next(error)
     }
 }
@@ -32,6 +33,7 @@ const login = async (req, res, next) => {
         }
         res.status(httpStatus.OK).send(response)
     } catch (error) {
+        logger.error(error)
         next(error)
     }
 }

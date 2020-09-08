@@ -1,3 +1,4 @@
+const logger = require('../logger/logger')
 const mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
 
@@ -14,9 +15,9 @@ module.exports = async () => {
             ssl: true,
             sslValidate: true,
         })
-        console.log('Database Connected');
+        logger.info('Database Connected');
     } catch (error) {
-        console.log('Database Connectivity Error', error);
+        logger.error('Database Connectivity Error', error);
         throw new Error(error);
     }
 }
